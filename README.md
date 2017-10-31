@@ -1,6 +1,6 @@
 # GUEDR (kotlin)
 
-An weather application to show the 7 days forecast for any city.
+A weather application to show the 7 days forecast for any city.
 
 ----
 
