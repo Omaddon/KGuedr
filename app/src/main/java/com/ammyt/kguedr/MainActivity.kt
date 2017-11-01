@@ -5,10 +5,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     val TAG = MainActivity::class.java.canonicalName
+
+    var offlineWeatherImage: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,6 +20,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         findViewById<Button>(R.id.stone_button).setOnClickListener(this)
         findViewById<Button>(R.id.donkey_button).setOnClickListener(this)
+        offlineWeatherImage = findViewById(R.id.offline_weather_image)
 
         Log.v(TAG, "🔎 Testing onCreate.")
 
@@ -33,6 +38,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.stone_button   ->  "🖱 onClick STONE"
             R.id.donkey_button  ->  "🖱 onClick DONKEY"
             else                ->  "🖱 onClick desconocido"
+        })
+
+
+        offlineWeatherImage?.setImageResource(when (v?.id) {
+            R.id.donkey_button   ->  R.drawable.offline_weather2
+            else                 ->  R.drawable.offline_weather
         })
 
 //        OPCIÓN - 3
