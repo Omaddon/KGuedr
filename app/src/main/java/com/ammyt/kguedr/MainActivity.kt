@@ -1,80 +1,44 @@
 package com.ammyt.kguedr
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.Button
+import android.support.v7.app.AppCompatActivity
 import android.widget.ImageView
+import android.widget.TextView
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class MainActivity : AppCompatActivity(){
 
     val TAG = MainActivity::class.java.canonicalName
-
-    var offlineWeatherImage: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<Button>(R.id.stone_button).setOnClickListener(this)
-        findViewById<Button>(R.id.donkey_button).setOnClickListener(this)
-        offlineWeatherImage = findViewById(R.id.offline_weather_image)
+        // Mock model
+        val forecast = Forecast(
+                25f,
+                12f,
+                42f,
+                "Sunny",
+                R.drawable.ico_01
+        )
 
-        Log.v(TAG, "🔎 Testing onCreate.")
-
-        if (savedInstanceState != null) {
-            Log.v(TAG, "🆗 savedInstanceState NO es null y vale: ${savedInstanceState.getString("clave")}")
-        }
-        else {
-            Log.v(TAG, "🔎 savedInstanceState ES null")
-        }
+        setForecast(forecast)
     }
 
-    override fun onClick(v: View?) {
+    private fun setForecast(forecast: Forecast) {
 
-        Log.v(TAG, when(v?.id) {
-            R.id.stone_button   ->  "🖱 onClick STONE"
-            R.id.donkey_button  ->  "🖱 onClick DONKEY"
-            else                ->  "🖱 onClick desconocido"
-        })
+        // Access to views
+        val forecastImage = findViewById<ImageView>(R.id.forecast_image)
+        val maxTemp = findViewById<TextView>(R.id.max_temp)
+        val minTemp = findViewById<TextView>(R.id.min_temp)
+        val humidity = findViewById<TextView>(R.id.humidity)
+        val description = findViewById<TextView>(R.id.forecast_description)
 
-
-        offlineWeatherImage?.setImageResource(when (v?.id) {
-            R.id.donkey_button   ->  R.drawable.offline_weather2
-            else                 ->  R.drawable.offline_weather
-        })
-
-//        OPCIÓN - 3
-//        when (v?.id) {
-//            R.id.stone_button   ->  Log.v(TAG, "🖱 onClick STONE")
-//            R.id.donkey_button  ->  Log.v(TAG, "🖱 onClick DONKEY")
-//            else                ->  Log.v(TAG, "🖱 onClick desconocido")
-//        }
-
-//        OPCIÓN - 2
-//        if (v != null) {
-//            if (v.id == R.id.stone_button) {
-//                Log.v(TAG, "🖱 onClick STONE")
-//            } else {
-//                Log.v(TAG, "🖱 onClick DONKEY")
-//            }
-//        }
-
-//        OPCIÓN - 1
-//        if (v == stoneButton) {
-//            Log.v(TAG, "🖱 onClick STONE")
-//        }
-//        else if (v == donkeyButton) {
-//            Log.v(TAG, "🖱 onClick DONKEY")
-//        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
-        super.onSaveInstanceState(outState)
-
-        Log.v(TAG, "🔎 onSaveInstanceState.")
-
-        outState?.putString("clave", "valor")
+        // Model -> View
+        forecastImage.setImageResource(forecast.icon)
+        description.text = forecast.description
+        maxTemp.text = getString(R.string.max_temp_format, forecast.maxTemp)
+        minTemp.text = getString(R.string.min_temp_format, forecast.minTemp)
+        humidity.text = getString(R.string.humidity_format, forecast.humidity)
     }
 }
