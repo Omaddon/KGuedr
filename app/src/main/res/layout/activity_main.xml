@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/margin_big"
-    tools:context="com.ammyt.kguedr.MainActivity">
+    tools:context="com.ammyt.kguedr.ForecastActivity">
 
 
     <ImageView

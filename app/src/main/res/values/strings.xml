@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">KGuedr</string>
+    <string name="app_name">KGüedr</string>
     <string name="offline_description">Imagen que representa el tiempo cuando no hay internet.</string>
     <string name="stone_button">Sistema Piedra</string>
     <string name="donkey_button">Sistema Burro</string>
