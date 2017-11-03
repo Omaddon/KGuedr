@@ -7,4 +7,7 @@
     <string name="max_temp_format">Temp Max: %.2fºC</string>
     <string name="min_temp_format">Temp Min: %.2fºC</string>
     <string name="humidity_format">Humidity: %.0f%%</string>
+    <string name="enter_units">Choose temperature units:</string>
+    <string name="celsius_rb">Celsius ºC</string>
+    <string name="farenheit_rb">Farenheit ºF</string>
 </resources>
