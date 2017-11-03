@@ -4,10 +4,11 @@
     <string name="stone_button">Sistema Piedra</string>
     <string name="donkey_button">Sistema Burro</string>
     <string name="forecast_image_description">Image of forecast.</string>
-    <string name="max_temp_format">Temp Max: %.2fºC</string>
-    <string name="min_temp_format">Temp Min: %.2fºC</string>
+    <string name="max_temp_format">Temp Max: %.2f%s</string>
+    <string name="min_temp_format">Temp Min: %.2f%s</string>
     <string name="humidity_format">Humidity: %.0f%%</string>
     <string name="enter_units">Choose temperature units:</string>
     <string name="celsius_rb">Celsius ºC</string>
     <string name="fahrenheit_rb">Fahrenheit ºF</string>
+    <string name="settings">Settings</string>
 </resources>
