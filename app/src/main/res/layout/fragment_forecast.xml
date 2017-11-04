@@ -1,7 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/margin_big">
 
-</android.support.constraint.ConstraintLayout>
+    <ImageView
+        android:id="@+id/forecast_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="@string/forecast_image_description"
+        app:srcCompat="@drawable/ico_02"/>
+
+    <TextView
+        android:id="@+id/forecast_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/forecast_image"
+        android:layout_marginTop="@dimen/margin_big"
+        tools:text="Description"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/forecast_image"
+        android:layout_toRightOf="@+id/forecast_image"
+        android:layout_above="@id/forecast_description"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginLeft="@dimen/margin_big"
+        android:layout_marginStart="@dimen/margin_big"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/max_temp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Temp Max 25ºC"/>
+
+        <TextView
+            android:id="@+id/min_temp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_small"
+            tools:text="Temp Min 14ºC"/>
+
+        <TextView
+            android:id="@+id/humidity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Humidity 42%"/>
+    </LinearLayout>
+
+</RelativeLayout>
