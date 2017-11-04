@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 
@@ -19,8 +21,8 @@ class ForecastActivity : AppCompatActivity(){
         val REQUEST_UNITS = 1
     }
 
-    var maxTemp: TextView? = null
-    var minTemp: TextView? = null
+    lateinit var maxTemp: TextView
+    lateinit var minTemp: TextView
 
     var forecast: Forecast? = null
         set(value) {
@@ -34,7 +36,8 @@ class ForecastActivity : AppCompatActivity(){
             val description = findViewById<TextView>(R.id.forecast_description)
 
             // Model -> View
-            if (value != null) {
+//            if (value != null) {
+            value?.let {
                 forecastImage.setImageResource(value.icon)
                 description.text = value.description
                 updateTemperature()
@@ -91,6 +94,18 @@ class ForecastActivity : AppCompatActivity(){
             if (resultCode == Activity.RESULT_OK) {
                 // Han pulsado OK
                 val unitsSelected = data?.getIntExtra(SettingsActivity.EXTRA_UNITS, R.id.celsius_rb)
+                when (unitsSelected) {
+                    R.id.celsius_rb -> {
+//                        Toast.makeText(this, "Celsius selected.", Toast.LENGTH_LONG)
+//                                .show()
+                    }
+                    R.id.farenheit_rb -> {
+
+                    }
+                }
+
+                val oldShowCelsius = temperatureUnits()
+
                 PreferenceManager.getDefaultSharedPreferences(this)
                         .edit()
                         .putBoolean(PREFERENCES_SHOW_CELSIUS, unitsSelected == R.id.celsius_rb)
@@ -98,6 +113,20 @@ class ForecastActivity : AppCompatActivity(){
 
                 updateTemperature()
 
+                // Para usar la skackBar, debemos añadir la dependencia "design"
+                Snackbar.make(findViewById<View>(android.R.id.content),
+                        "Preferences changed.",
+                        Snackbar.LENGTH_LONG)
+                        .setAction("Undo") {
+                            PreferenceManager.getDefaultSharedPreferences(this)
+                                    .edit()
+                                    .putBoolean(PREFERENCES_SHOW_CELSIUS,
+                                            oldShowCelsius == Forecast.TempUnit.CELSIUS)
+                                    .apply()
+
+                            updateTemperature()
+                        }
+                        .show()
             }
             else if (resultCode == Activity.RESULT_CANCELED){
                 // Han pulsado CANCEL
@@ -110,20 +139,19 @@ class ForecastActivity : AppCompatActivity(){
         val units = temperatureUnits()
         val unitsString = temperatureUnitsString(units)
 
-        maxTemp = findViewById(R.id.max_temp)
-        minTemp = findViewById(R.id.min_temp)
-
-        maxTemp?.text = getString(R.string.max_temp_format, forecast?.getMaxTemp(units), unitsString)
-        minTemp?.text = getString(R.string.min_temp_format, forecast?.getMinTemp(units), unitsString)
+        maxTemp.text = getString(R.string.max_temp_format, forecast?.getMaxTemp(units), unitsString)
+        minTemp.text = getString(R.string.min_temp_format, forecast?.getMinTemp(units), unitsString)
     }
 
-    private fun temperatureUnitsString(units: Forecast.TempUnit) = if (units == Forecast.TempUnit.CELSIUS) "ºC" else "ºF"
+    private fun temperatureUnitsString(units: Forecast.TempUnit) =
+            if (units == Forecast.TempUnit.CELSIUS) "ºC" else "ºF"
 
-    private fun temperatureUnits() = if (PreferenceManager.getDefaultSharedPreferences(this)
-            .getBoolean(PREFERENCES_SHOW_CELSIUS, true)) {
-        Forecast.TempUnit.CELSIUS
-    }
-    else {
-        Forecast.TempUnit.FAHRENHEIT
-    }
+    private fun temperatureUnits() =
+            if (PreferenceManager.getDefaultSharedPreferences(this)
+                    .getBoolean(PREFERENCES_SHOW_CELSIUS, true)) {
+                Forecast.TempUnit.CELSIUS
+            }
+            else {
+                Forecast.TempUnit.FAHRENHEIT
+            }
 }
