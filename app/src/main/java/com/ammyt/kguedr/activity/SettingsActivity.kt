@@ -1,4 +1,4 @@
-package com.ammyt.kguedr
+package com.ammyt.kguedr.activity
 
 import android.app.Activity
 import android.content.Context
@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.RadioGroup
+import com.ammyt.kguedr.R
 
 
 class SettingsActivity : AppCompatActivity() {

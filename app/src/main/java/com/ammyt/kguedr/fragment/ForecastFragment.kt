@@ -1,4 +1,4 @@
-package com.ammyt.kguedr
+package com.ammyt.kguedr.fragment
 
 import android.app.Activity
 import android.app.Fragment
@@ -9,6 +9,10 @@ import android.support.design.widget.Snackbar
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import com.ammyt.kguedr.model.Forecast
+import com.ammyt.kguedr.PREFERENCES_SHOW_CELSIUS
+import com.ammyt.kguedr.R
+import com.ammyt.kguedr.activity.SettingsActivity
 
 
 class ForecastFragment : Fragment() {
