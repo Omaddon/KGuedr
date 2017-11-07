@@ -163,6 +163,15 @@ class ForecastFragment : Fragment() {
         }
     }
 
+    // ~ viewWillAppear
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+
+        if (isVisibleToUser && forecast != null) {
+            updateTemperature()
+        }
+    }
+
     private fun updateTemperature() {
         val units = temperatureUnits()
         val unitsString = temperatureUnitsString(units)
