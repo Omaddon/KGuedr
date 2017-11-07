@@ -22,29 +22,30 @@
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
+        android:id="@+id/fragment_city_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.ammyt.kguedr.activity.CityPagerActivity"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/view_pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <!--<android.support.v4.view.ViewPager-->
+            <!--android:id="@+id/view_pager"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
 
-            <!--<android.support.v4.view.PagerTitleStrip-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content">-->
-                <!---->
-            <!--</android.support.v4.view.PagerTitleStrip>-->
+            <!--&lt;!&ndash;<android.support.v4.view.PagerTitleStrip&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_height="wrap_content">&ndash;&gt;-->
+                <!--&lt;!&ndash;&ndash;&gt;-->
+            <!--&lt;!&ndash;</android.support.v4.view.PagerTitleStrip>&ndash;&gt;-->
 
-            <!--<android.support.v4.view.PagerTabStrip-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content">-->
+            <!--&lt;!&ndash;<android.support.v4.view.PagerTabStrip&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_height="wrap_content">&ndash;&gt;-->
 
-            <!--</android.support.v4.view.PagerTabStrip>-->
+            <!--&lt;!&ndash;</android.support.v4.view.PagerTabStrip>&ndash;&gt;-->
 
-        </android.support.v4.view.ViewPager>
+        <!--</android.support.v4.view.ViewPager>-->
 
     </FrameLayout>
 
