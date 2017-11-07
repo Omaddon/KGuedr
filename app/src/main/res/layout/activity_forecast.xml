@@ -7,12 +7,11 @@
     android:layout_margin="@dimen/margin_big"
     tools:context="com.ammyt.kguedr.activity.ForecastActivity">
 
-    <fragment
-        android:id="@+id/forecast_fragment"
+    <FrameLayout
+        android:id="@+id/city_list_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.ammyt.kguedr.fragment.ForecastFragment">
+        android:layout_height="match_parent">
 
-    </fragment>
+    </FrameLayout>
 
 </FrameLayout>

@@ -1,6 +1,8 @@
 package com.ammyt.kguedr.activity
 
 import android.app.Fragment
+import android.content.Context
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v13.app.FragmentPagerAdapter
@@ -16,6 +18,16 @@ class CityPagerActivity : AppCompatActivity() {
 
     val pager by lazy { findViewById<ViewPager>(R.id.view_pager) }
     val cities = Cities()
+
+    companion object {
+        val EXTRA_CITY_INDEX = "EXTRA_CITY_INDEX"
+
+        fun intent(context: Context?, cityIndex: Int): Intent {
+            val intent = Intent(context, CityPagerActivity::class.java)
+            intent.putExtra(EXTRA_CITY_INDEX, cityIndex)
+            return intent
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +70,9 @@ class CityPagerActivity : AppCompatActivity() {
 
         })
 
-        updateCityInfo(0)
+        val initialCityIndex = intent.getIntExtra(EXTRA_CITY_INDEX, 0)
+        pager.currentItem = initialCityIndex
+        updateCityInfo(initialCityIndex)
     }
 
     private fun updateCityInfo(position: Int) {
