@@ -1,5 +1,7 @@
 package com.ammyt.kguedr.model
 
+import java.io.Serializable
+
 // Podemos hacer el constructor así, y acceder a los atributos directamente con ese nombre
 // Con poner 'data' delante de la clase nos genera solo los getter y lo setter
 data class Forecast(
@@ -7,7 +9,7 @@ data class Forecast(
         var minTemp: Float,
         var humidity: Float,
         var description: String,
-        var icon: Int) {
+        var icon: Int) : Serializable {
 
     enum class TempUnit {
         CELSIUS,

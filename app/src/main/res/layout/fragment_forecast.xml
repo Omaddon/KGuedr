@@ -5,7 +5,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/margin_big">
+    android:padding="@dimen/margin_big">
+
+    <TextView
+        android:id="@+id/city"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        tools:text="Madrid"/>
 
     <ImageView
         android:id="@+id/forecast_image"
@@ -13,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/city"
         android:contentDescription="@string/forecast_image_description"
         app:srcCompat="@drawable/ico_02"/>
 
@@ -27,13 +39,12 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/forecast_image"
-        android:layout_marginTop="@dimen/margin_big"
         tools:text="Description"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/city"
         android:layout_toEndOf="@+id/forecast_image"
         android:layout_toRightOf="@+id/forecast_image"
         android:layout_above="@id/forecast_description"

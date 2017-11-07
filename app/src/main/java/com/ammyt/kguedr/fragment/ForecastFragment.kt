@@ -13,6 +13,7 @@ import com.ammyt.kguedr.model.Forecast
 import com.ammyt.kguedr.PREFERENCES_SHOW_CELSIUS
 import com.ammyt.kguedr.R
 import com.ammyt.kguedr.activity.SettingsActivity
+import com.ammyt.kguedr.model.City
 
 
 class ForecastFragment : Fragment() {
@@ -20,11 +21,30 @@ class ForecastFragment : Fragment() {
     // Es un singletone con atributos y métodos estáticos ~ static de java
     companion object {
         val REQUEST_UNITS = 1
+        private val ARG_CITY = "ARG_CITY"
+
+        fun newInstance(city: City): ForecastFragment {
+            val fragment = ForecastFragment()
+
+            val arguments = Bundle()
+            arguments.putSerializable(ARG_CITY, city)
+            fragment.arguments = arguments
+
+            return fragment
+        }
     }
 
     lateinit var root: View
     lateinit var maxTemp: TextView
     lateinit var minTemp: TextView
+
+    var city: City? = null
+        set(value) {
+            value?.let {
+                root.findViewById<TextView>(R.id.city).text = value.name
+                forecast = value.forecast
+            }
+        }
 
     var forecast: Forecast? = null
         set(value) {
@@ -62,14 +82,9 @@ class ForecastFragment : Fragment() {
             // "it" es el valor del inflater cuando no es null (inflater.let)
             root = it!!.inflate(R.layout.fragment_forecast, container, false)
 
-            // Mock model
-            forecast = Forecast(
-                    32f,
-                    22f,
-                    42f,
-                    "Sunny",
-                    R.drawable.ico_01
-            )
+            if (arguments != null) {
+                city = arguments.getSerializable(ARG_CITY) as? City
+            }
         }
 
         return root
