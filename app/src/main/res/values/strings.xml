@@ -11,4 +11,6 @@
     <string name="celsius_rb">Celsius ºC</string>
     <string name="fahrenheit_rb">Fahrenheit ºF</string>
     <string name="settings">Settings</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
 </resources>
