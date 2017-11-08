@@ -22,6 +22,7 @@ import org.jetbrains.anko.coroutines.experimental.bg
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.*
 
 
 class ForecastFragment : Fragment() {
@@ -233,6 +234,11 @@ class ForecastFragment : Fragment() {
         try {
             // Nos descargamos la información del tiempo (sin frameworks de apoyo)
             val url = URL("https://api.openweathermap.org/data/2.5/forecast/daily?q=${city?.name}&lang=sp&units=metric&appid=${CONSTANT_APIKEY}")
+
+            // Esto es equivalente a lo de abajo comentado
+            val jsonString = Scanner(url.openStream(), "UTF-8").useDelimiter("\\A").next()
+
+            /*
             val con = url.openConnection() as HttpURLConnection
             con.connect()
 
@@ -246,9 +252,11 @@ class ForecastFragment : Fragment() {
                 sb.append(String(data, 0, downloadBytes))
                 downloadBytes = input.read(data)
             }
+            */
 
             // Analizamos los datos descargados
-            val jsonRoot = JSONObject(sb.toString())
+            //val jsonRoot = JSONObject(sb.toString())
+            val jsonRoot = JSONObject(jsonString)
             val list = jsonRoot.getJSONArray("list")
             val today = list.getJSONObject(0)
             val jsonMaxTemp = today.getJSONObject("temp").getDouble("max").toFloat()
