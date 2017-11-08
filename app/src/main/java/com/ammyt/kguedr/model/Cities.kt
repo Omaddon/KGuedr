@@ -1,6 +1,5 @@
 package com.ammyt.kguedr.model
 
-import com.ammyt.kguedr.R
 import java.io.Serializable
 
 
@@ -8,9 +7,9 @@ import java.io.Serializable
 object Cities : Serializable {
     // "listOf" es inmutable. Con "mutableListOf" la hacemos mutable. De momento mockeamos la lista.
     private var cities: List<City> = listOf(
-            City("Madrid", Forecast(25f, 12f, 35f, "Sunny", R.drawable.ico_01)),
-            City("Jaén", Forecast(25f, 23f, 12f, "Cloudy", R.drawable.ico_02)),
-            City("Tárrega", Forecast(20f, 2f, 42f, "Sunny", R.drawable.ico_10))
+            City("Madrid"),
+            City("Jaén"),
+            City("Barcelona")
     )
 
     val count: Int

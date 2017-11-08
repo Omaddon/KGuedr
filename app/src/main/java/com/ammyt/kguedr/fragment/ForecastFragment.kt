@@ -3,17 +3,22 @@ package com.ammyt.kguedr.fragment
 import android.app.Activity
 import android.app.Fragment
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import com.ammyt.kguedr.CONSTANT_APIKEY
 import com.ammyt.kguedr.model.Forecast
 import com.ammyt.kguedr.PREFERENCES_SHOW_CELSIUS
 import com.ammyt.kguedr.R
 import com.ammyt.kguedr.activity.SettingsActivity
 import com.ammyt.kguedr.model.City
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
 
 
 class ForecastFragment : Fragment() {
@@ -40,6 +45,7 @@ class ForecastFragment : Fragment() {
 
     var city: City? = null
         set(value) {
+            field = value
             value?.let {
                 root.findViewById<TextView>(R.id.city).text = value.name
                 forecast = value.forecast
@@ -59,11 +65,14 @@ class ForecastFragment : Fragment() {
 
             // Model -> View
 //            if (value != null) {
-            value?.let {
+            if (value != null) {
                 forecastImage.setImageResource(value.icon)
                 description.text = value.description
                 updateTemperature()
                 humidity.text = getString(R.string.humidity_format, value.humidity)
+            }
+            else {
+                updateForecast()
             }
         }
 
@@ -170,6 +179,92 @@ class ForecastFragment : Fragment() {
         if (isVisibleToUser && forecast != null) {
             updateTemperature()
         }
+    }
+
+    private fun updateForecast() {
+        // OJO!! Debemos realizar toda la descarga en segundo plano!!
+        // Recordemos que no podemos tocar la interfaz en segundo plano
+        val weatherDownloader = object : AsyncTask<City, Int, Forecast?>() {
+
+            override fun onPreExecute() {
+                super.onPreExecute()
+                // Esto se ejecuta en el hilo principal
+            }
+
+            override fun doInBackground(vararg params: City): Forecast? {
+                return downloadForecast(params[0])
+            }
+
+            override fun onPostExecute(result: Forecast?) {
+                super.onPostExecute(result)
+                // Esto se ejecuta en el hilo principal
+                if (result != null) {
+                    // Eso quiere decir que NO ha habido errores -> actualizamos interfaz
+                    city?.forecast = result
+                    forecast = result
+                }
+            }
+        }
+
+        weatherDownloader.execute(city)
+    }
+
+    fun downloadForecast(city: City): Forecast? {
+        try {
+            // Nos descargamos la información del tiempo (sin frameworks de apoyo)
+            val url = URL("https://api.openweathermap.org/data/2.5/forecast/daily?q=${city.name}&lang=sp&units=metric&appid=${CONSTANT_APIKEY}")
+            val con = url.openConnection() as HttpURLConnection
+            con.connect()
+
+            val data = ByteArray(1024)
+            var downloadBytes: Int
+            val input = con.inputStream
+            val sb = StringBuilder()
+
+            downloadBytes = input.read(data)
+            while (downloadBytes != -1) {
+                sb.append(String(data, 0, downloadBytes))
+                downloadBytes = input.read(data)
+            }
+
+            // Analizamos los datos descargados
+            val jsonRoot = JSONObject(sb.toString())
+            val list = jsonRoot.getJSONArray("list")
+            val today = list.getJSONObject(0)
+            val jsonMaxTemp = today.getJSONObject("temp").getDouble("max").toFloat()
+            val jsonMinTemp = today.getJSONObject("temp").getDouble("min").toFloat()
+            val jsonHumidity = today.getDouble("humidity").toFloat()
+            val jsonDescription = today.getJSONArray("weather").getJSONObject(0).getString("description")
+            var jsonIconString = today.getJSONArray("weather").getJSONObject(0).getString("icon")
+
+            // Convertimos el iconString a un Drawble
+            jsonIconString = jsonIconString.substring(0, jsonIconString.length - 1)
+            val iconInt = jsonIconString.toInt()
+            val iconResource = when (iconInt) {
+                2 -> R.drawable.ico_02
+                3 -> R.drawable.ico_03
+                4 -> R.drawable.ico_04
+                9 -> R.drawable.ico_09
+                10 -> R.drawable.ico_10
+                11 -> R.drawable.ico_11
+                13 -> R.drawable.ico_13
+                50 -> R.drawable.ico_50
+                else -> R.drawable.ico_01
+            }
+
+            // Una vez que tenemos todos los datos, creamos nuestro Forecast
+            return Forecast(
+                    jsonMaxTemp,
+                    jsonMinTemp,
+                    jsonHumidity,
+                    jsonDescription,
+                    iconResource
+            )
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+
+        return null
     }
 
     private fun updateTemperature() {
