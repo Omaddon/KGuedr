@@ -14,7 +14,6 @@ class CityPagerFragment : Fragment() {
 
     lateinit var root: View
     val pager by lazy { root.findViewById<ViewPager>(R.id.view_pager) }
-    val cities = Cities()
     var initialCityIndex = 0
 
     companion object {
@@ -44,21 +43,21 @@ class CityPagerFragment : Fragment() {
 
             root = inflater.inflate(R.layout.fragment_city_pager, container, false)
 
-            initialCityIndex = arguments.getInt(ARG_CITY_INDEX)
+            initialCityIndex = arguments?.getInt(ARG_CITY_INDEX) ?: 0
 
             // Necesitamos un "delegado"/adapter que vaya creando cada página
             // OJO, tenemos que añadir un librería (support-v13) para usar este nuevo Pager!!
             // De esta forma creamos una clase anónima
             val adapter = object : FragmentPagerAdapter(fragmentManager) {
                 override fun getItem(position: Int): Fragment {
-                    return ForecastFragment.newInstance(cities[position])
+                    return ForecastFragment.newInstance(Cities[position])
                 }
 
                 override fun getCount(): Int {
-                    return cities.count
+                    return Cities.count
                 }
 
-                override fun getPageTitle(position: Int): CharSequence = cities[position].name
+                override fun getPageTitle(position: Int): CharSequence = Cities[position].name
             }
 
             pager.adapter = adapter
@@ -113,14 +112,14 @@ class CityPagerFragment : Fragment() {
         val menuNext = menu?.findItem(R.id.next)
 
         menuPrev?.setEnabled(pager.currentItem > 0)
-        menuNext?.setEnabled(pager.currentItem < cities.count - 1)
+        menuNext?.setEnabled(pager.currentItem < Cities.count - 1)
     }
 
     private fun updateCityInfo(position: Int) {
         if (activity is AppCompatActivity) {
             // Como hemos puesto nuestra toolbar como "SupportActionBar", podemos acceder a ella así:
             val supportActionBar = (activity as? AppCompatActivity)?.supportActionBar
-            supportActionBar?.title = cities[position].name
+            supportActionBar?.title = Cities[position].name
         }
     }
 }

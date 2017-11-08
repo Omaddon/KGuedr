@@ -4,7 +4,8 @@ import com.ammyt.kguedr.R
 import java.io.Serializable
 
 
-class Cities : Serializable {
+// En lugar de poner "class", ponemos "object" y así lo convertimos en un Singletone
+object Cities : Serializable {
     // "listOf" es inmutable. Con "mutableListOf" la hacemos mutable. De momento mockeamos la lista.
     private var cities: List<City> = listOf(
             City("Madrid", Forecast(25f, 12f, 35f, "Sunny", R.drawable.ico_01)),

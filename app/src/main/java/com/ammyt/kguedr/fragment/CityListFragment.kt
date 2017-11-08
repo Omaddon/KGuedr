@@ -17,18 +17,11 @@ import com.ammyt.kguedr.model.City
 class CityListFragment : Fragment() {
 
     lateinit var root: View
-    private var cities: Cities? = null
     private var onCitySelectedListener: OnCitySelectedListener? = null
 
     companion object {
-        private val ARG_CITIES = "ARG_CITIES"
-
-        fun newInstance(cities: Cities): CityListFragment {
+        fun newInstance(): CityListFragment {
             val fragment = CityListFragment()
-
-            val args = Bundle()
-            args.putSerializable(ARG_CITIES, cities)
-            fragment.arguments = args
 
             return fragment
         }
@@ -36,9 +29,6 @@ class CityListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            cities = arguments.getSerializable(ARG_CITIES) as? Cities
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater?,
@@ -54,13 +44,13 @@ class CityListFragment : Fragment() {
             val adapter = ArrayAdapter<City>(
                     activity,
                     android.R.layout.simple_list_item_1,
-                    cities?.toArray())
+                    Cities.toArray())
             list.adapter = adapter
 
             // Detectamos la pulsación sobre una celda de la lista
             list.setOnItemClickListener { parent, view, position, id ->
                 // Avisamos al listener. Nos comunicaremos con la actividad mediante protocolo/interfaz.
-                onCitySelectedListener?.onCitySelected(cities?.get(position), position)
+                onCitySelectedListener?.onCitySelected(Cities.get(position), position)
             }
         }
 
