@@ -3,7 +3,6 @@ package com.ammyt.kguedr.fragment
 import android.app.Activity
 import android.app.Fragment
 import android.content.Intent
-import android.os.AsyncTask
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
@@ -11,11 +10,15 @@ import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import com.ammyt.kguedr.CONSTANT_APIKEY
-import com.ammyt.kguedr.model.Forecast
 import com.ammyt.kguedr.PREFERENCES_SHOW_CELSIUS
 import com.ammyt.kguedr.R
 import com.ammyt.kguedr.activity.SettingsActivity
 import com.ammyt.kguedr.model.City
+import com.ammyt.kguedr.model.Forecast
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
+import org.jetbrains.anko.coroutines.experimental.bg
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
@@ -54,7 +57,8 @@ class ForecastFragment : Fragment() {
 
     var forecast: Forecast? = null
         set(value) {
-            // Es el lugar donde realmente se guarda el value
+            // "field" es el lugar donde realmente se guarda el value. De esta forma le asignamos
+            // el valor "value" a "forecast" ANTES de hacer el resto
             field = value
             // Access to views
             val forecastImage = root.findViewById<ImageView>(R.id.forecast_image)
@@ -184,35 +188,51 @@ class ForecastFragment : Fragment() {
     private fun updateForecast() {
         // OJO!! Debemos realizar toda la descarga en segundo plano!!
         // Recordemos que no podemos tocar la interfaz en segundo plano
-        val weatherDownloader = object : AsyncTask<City, Int, Forecast?>() {
 
-            override fun onPreExecute() {
-                super.onPreExecute()
-                // Esto se ejecuta en el hilo principal
+        // Hay que importar la librería experimental de "anko"
+        async(UI) {
+            val newForecast: Deferred<Forecast?> = bg {
+                downloadForecast(city)
             }
 
-            override fun doInBackground(vararg params: City): Forecast? {
-                return downloadForecast(params[0])
-            }
-
-            override fun onPostExecute(result: Forecast?) {
-                super.onPostExecute(result)
-                // Esto se ejecuta en el hilo principal
-                if (result != null) {
-                    // Eso quiere decir que NO ha habido errores -> actualizamos interfaz
-                    city?.forecast = result
-                    forecast = result
-                }
-            }
+            forecast = newForecast.await()
         }
 
-        weatherDownloader.execute(city)
+// ------------------------------------------------------------------------------------------
+        // CUIDADO!! Se crea una dependecia con la Actvidad. De tal forma que si se gira el
+        // dispositivo y se recrea una nueva actividad, al intentar llamar a onPostExecute se
+        // hará referencia a la vieja actividad destruída, produciendo una Excepción y crash.
+//        val weatherDownloader = object : AsyncTask<City, Int, Forecast?>() {
+//
+//            override fun onPreExecute() {
+//                super.onPreExecute()
+//                // Esto se ejecuta en el hilo principal
+//            }
+//
+//            override fun doInBackground(vararg params: City): Forecast? {
+//                return downloadForecast(params[0])
+//            }
+//
+//            override fun onPostExecute(result: Forecast?) {
+//                super.onPostExecute(result)
+//                // Esto se ejecuta en el hilo principal
+//                if (result != null) {
+//                    // Eso quiere decir que NO ha habido errores -> actualizamos interfaz
+//                    city?.forecast = result
+//                    forecast = result
+//                }
+//            }
+//        }
+
+//        weatherDownloader.execute(city)
+// ------------------------------------------------------------------------------------------
+
     }
 
-    fun downloadForecast(city: City): Forecast? {
+    fun downloadForecast(city: City?): Forecast? {
         try {
             // Nos descargamos la información del tiempo (sin frameworks de apoyo)
-            val url = URL("https://api.openweathermap.org/data/2.5/forecast/daily?q=${city.name}&lang=sp&units=metric&appid=${CONSTANT_APIKEY}")
+            val url = URL("https://api.openweathermap.org/data/2.5/forecast/daily?q=${city?.name}&lang=sp&units=metric&appid=${CONSTANT_APIKEY}")
             val con = url.openConnection() as HttpURLConnection
             con.connect()
 
@@ -251,6 +271,9 @@ class ForecastFragment : Fragment() {
                 50 -> R.drawable.ico_50
                 else -> R.drawable.ico_01
             }
+
+            // Para pruebas de simulación de retardo en descarga y testeo de problemas
+            Thread.sleep(2000)
 
             // Una vez que tenemos todos los datos, creamos nuestro Forecast
             return Forecast(
