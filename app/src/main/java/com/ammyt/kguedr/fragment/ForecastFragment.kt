@@ -233,7 +233,7 @@ class ForecastFragment : Fragment() {
                             updateForecast()
                         })
                         // Deberíamos informar a la actividad en lugar de hacer esto
-                        .setNegativeButton("Exit", { dialog, _ -> activity.finish() })
+                        .setNegativeButton("Exit", { _, _ -> activity.finish() })
                         .show()
             }
         }
@@ -320,7 +320,7 @@ class ForecastFragment : Fragment() {
             }
 
             // Para pruebas de simulación de retardo en descarga y testeo de problemas
-            Thread.sleep(2000)
+            Thread.sleep(1000)
 
             // Una vez que tenemos todos los datos, creamos nuestro Forecast
             return Forecast(

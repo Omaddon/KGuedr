@@ -8,8 +8,8 @@ object Cities : Serializable {
     // "listOf" es inmutable. Con "mutableListOf" la hacemos mutable. De momento mockeamos la lista.
     private var cities: List<City> = listOf(
             City("Madrid"),
-            City("Jaén"),
-            City("Barcelona")
+            City("Chicago"),
+            City("Tokyo")
     )
 
     val count: Int
