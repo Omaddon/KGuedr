@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.ViewSwitcher
 import com.ammyt.kguedr.CONSTANT_APIKEY
 import com.ammyt.kguedr.PREFERENCES_SHOW_CELSIUS
 import com.ammyt.kguedr.R
@@ -20,12 +21,17 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.coroutines.experimental.bg
 import org.json.JSONObject
-import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 
 
 class ForecastFragment : Fragment() {
+
+    // Enumerado para la selección de la vista a mostrar en el Switch
+    enum class VIEW_INDEX(val index: Int) {
+        LOADING(0),
+        FORECAST(1)
+    }
 
     // Es un singletone con atributos y métodos estáticos ~ static de java
     companion object {
@@ -46,6 +52,7 @@ class ForecastFragment : Fragment() {
     lateinit var root: View
     lateinit var maxTemp: TextView
     lateinit var minTemp: TextView
+    lateinit var viewSwitcher: ViewSwitcher
 
     var city: City? = null
         set(value) {
@@ -75,6 +82,9 @@ class ForecastFragment : Fragment() {
                 description.text = value.description
                 updateTemperature()
                 humidity.text = getString(R.string.humidity_format, value.humidity)
+
+                // Ya tenemos forecast descargado, así que lo mostramos
+                viewSwitcher.displayedChild = VIEW_INDEX.FORECAST.index
             }
             else {
                 updateForecast()
@@ -95,6 +105,9 @@ class ForecastFragment : Fragment() {
         inflater.let {
             // "it" es el valor del inflater cuando no es null (inflater.let)
             root = it!!.inflate(R.layout.fragment_forecast, container, false)
+            viewSwitcher = root.findViewById(R.id.view_switcher)
+            viewSwitcher.setInAnimation(activity, android.R.anim.fade_in)
+            viewSwitcher.setOutAnimation(activity, android.R.anim.fade_out)
 
             if (arguments != null) {
                 city = arguments.getSerializable(ARG_CITY) as? City
@@ -187,6 +200,10 @@ class ForecastFragment : Fragment() {
     }
 
     private fun updateForecast() {
+
+        // Le indicamos al ViewSwitcher qué vista debe mostrar. 0 = progressBar | 1 = forecast
+        viewSwitcher.displayedChild = VIEW_INDEX.LOADING.index
+
         // OJO!! Debemos realizar toda la descarga en segundo plano!!
         // Recordemos que no podemos tocar la interfaz en segundo plano
 
@@ -230,7 +247,7 @@ class ForecastFragment : Fragment() {
 
     }
 
-    fun downloadForecast(city: City?): Forecast? {
+    private fun downloadForecast(city: City?): Forecast? {
         try {
             // Nos descargamos la información del tiempo (sin frameworks de apoyo)
             val url = URL("https://api.openweathermap.org/data/2.5/forecast/daily?q=${city?.name}&lang=sp&units=metric&appid=${CONSTANT_APIKEY}")
