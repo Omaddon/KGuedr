@@ -7,6 +7,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,6 +18,7 @@ import com.ammyt.kguedr.CONSTANT_APIKEY
 import com.ammyt.kguedr.PREFERENCES_SHOW_CELSIUS
 import com.ammyt.kguedr.R
 import com.ammyt.kguedr.activity.SettingsActivity
+import com.ammyt.kguedr.adapter.ForecastRecyclerViewAdapter
 import com.ammyt.kguedr.model.City
 import com.ammyt.kguedr.model.Forecast
 import kotlinx.coroutines.experimental.Deferred
@@ -51,38 +55,27 @@ class ForecastFragment : Fragment() {
     }
 
     lateinit var root: View
-    lateinit var maxTemp: TextView
-    lateinit var minTemp: TextView
     lateinit var viewSwitcher: ViewSwitcher
+    lateinit var forecastList: RecyclerView
 
     var city: City? = null
         set(value) {
             field = value
             value?.let {
-                root.findViewById<TextView>(R.id.city).text = value.name
                 forecast = value.forecast
             }
         }
 
-    var forecast: Forecast? = null
+    var forecast: List<Forecast>? = null
         set(value) {
             // "field" es el lugar donde realmente se guarda el value. De esta forma le asignamos
             // el valor "value" a "forecast" ANTES de hacer el resto
             field = value
-            // Access to views
-            val forecastImage = root.findViewById<ImageView>(R.id.forecast_image)
-            maxTemp = root.findViewById(R.id.max_temp)
-            minTemp = root.findViewById(R.id.min_temp)
-            val humidity = root.findViewById<TextView>(R.id.humidity)
-            val description = root.findViewById<TextView>(R.id.forecast_description)
 
             // Model -> View
-//            if (value != null) {
             if (value != null) {
-                forecastImage.setImageResource(value.icon)
-                description.text = value.description
-                updateTemperature()
-                humidity.text = getString(R.string.humidity_format, value.humidity)
+                // Ya tenemos datos. Asignamos el adapter (creado por nosotros) al RecyclerView
+                forecastList.adapter = ForecastRecyclerViewAdapter(value, temperatureUnits())
 
                 // Ya tenemos forecast descargado, así que lo mostramos
                 viewSwitcher.displayedChild = VIEW_INDEX.FORECAST.index
@@ -109,9 +102,23 @@ class ForecastFragment : Fragment() {
         inflater.let {
             // "it" es el valor del inflater cuando no es null (inflater.let)
             root = it!!.inflate(R.layout.fragment_forecast, container, false)
+
             viewSwitcher = root.findViewById(R.id.view_switcher)
             viewSwitcher.setInAnimation(activity, android.R.anim.fade_in)
             viewSwitcher.setOutAnimation(activity, android.R.anim.fade_out)
+
+            // RECYCLER VIEW ~ CollectionView de iOS
+            // 1) Accedemos al RecyclerView
+            forecastList = root.findViewById(R.id.forecast_list)
+
+            // 2) Le indicamos cómo debe visualiazarse (LayoutManager)
+            forecastList.layoutManager = LinearLayoutManager(activity)
+
+            // 3) Le indicamos cómo debe animarse (ItemAnimator)
+            forecastList.itemAnimator = DefaultItemAnimator()
+
+            // 4) Le añadimos su adapter (pero solo cuando haya datos -> no lo hacemos aquí sino en el setter del forecast)
+
 
             if (arguments != null) {
                 city = arguments.getSerializable(ARG_CITY) as? City
@@ -213,7 +220,7 @@ class ForecastFragment : Fragment() {
 
         // Hay que importar la librería experimental de "anko"
         async(UI) {
-            val newForecast: Deferred<Forecast?> = bg {
+            val newForecast: Deferred<List<Forecast>?> = bg {
                 downloadForecast(city)
             }
 
@@ -269,8 +276,11 @@ class ForecastFragment : Fragment() {
 
     }
 
-    private fun downloadForecast(city: City?): Forecast? {
+    private fun downloadForecast(city: City?): List<Forecast>? {
         try {
+            // Para pruebas de simulación de retardo en descarga y testeo de problemas
+            Thread.sleep(1000)
+
             // Nos descargamos la información del tiempo (sin frameworks de apoyo)
             val url = URL("https://api.openweathermap.org/data/2.5/forecast/daily?q=${city?.name}&lang=sp&units=metric&appid=${CONSTANT_APIKEY}")
 
@@ -297,52 +307,57 @@ class ForecastFragment : Fragment() {
             //val jsonRoot = JSONObject(sb.toString())
             val jsonRoot = JSONObject(jsonString)
             val list = jsonRoot.getJSONArray("list")
-            val today = list.getJSONObject(0)
-            val jsonMaxTemp = today.getJSONObject("temp").getDouble("max").toFloat()
-            val jsonMinTemp = today.getJSONObject("temp").getDouble("min").toFloat()
-            val jsonHumidity = today.getDouble("humidity").toFloat()
-            val jsonDescription = today.getJSONArray("weather").getJSONObject(0).getString("description")
-            var jsonIconString = today.getJSONArray("weather").getJSONObject(0).getString("icon")
+            val forecasts = mutableListOf<Forecast>()
 
-            // Convertimos el iconString a un Drawble
-            jsonIconString = jsonIconString.substring(0, jsonIconString.length - 1)
-            val iconInt = jsonIconString.toInt()
-            val iconResource = when (iconInt) {
-                2 -> R.drawable.ico_02
-                3 -> R.drawable.ico_03
-                4 -> R.drawable.ico_04
-                9 -> R.drawable.ico_09
-                10 -> R.drawable.ico_10
-                11 -> R.drawable.ico_11
-                13 -> R.drawable.ico_13
-                50 -> R.drawable.ico_50
-                else -> R.drawable.ico_01
+            for (dayIndex in 0..list.length() - 1) {
+
+                val today = list.getJSONObject(dayIndex)
+
+                val jsonMaxTemp = today.getJSONObject("temp").getDouble("max").toFloat()
+                val jsonMinTemp = today.getJSONObject("temp").getDouble("min").toFloat()
+                val jsonHumidity = today.getDouble("humidity").toFloat()
+                val jsonDescription = today.getJSONArray("weather").getJSONObject(0).getString("description")
+                var jsonIconString = today.getJSONArray("weather").getJSONObject(0).getString("icon")
+
+                // Convertimos el iconString a un Drawble
+                jsonIconString = jsonIconString.substring(0, jsonIconString.length - 1)
+                val iconInt = jsonIconString.toInt()
+                val iconResource = when (iconInt) {
+                    2 -> R.drawable.ico_02
+                    3 -> R.drawable.ico_03
+                    4 -> R.drawable.ico_04
+                    9 -> R.drawable.ico_09
+                    10 -> R.drawable.ico_10
+                    11 -> R.drawable.ico_11
+                    13 -> R.drawable.ico_13
+                    50 -> R.drawable.ico_50
+                    else -> R.drawable.ico_01
+                }
+
+                // Una vez que tenemos todos los datos, creamos nuestro Forecast y lo añadimos a la lista
+                forecasts.add(Forecast(
+                        jsonMaxTemp,
+                        jsonMinTemp,
+                        jsonHumidity,
+                        jsonDescription,
+                        iconResource
+                ))
             }
 
-            // Para pruebas de simulación de retardo en descarga y testeo de problemas
-            Thread.sleep(1000)
+            // Después de recorrer toda la lista de forecast, devolvemos nestra lista de Forecast
+            return forecasts
 
-            // Una vez que tenemos todos los datos, creamos nuestro Forecast
-            return Forecast(
-                    jsonMaxTemp,
-                    jsonMinTemp,
-                    jsonHumidity,
-                    jsonDescription,
-                    iconResource
-            )
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
 
+        // En caso de error no devolvemos nada
         return null
     }
 
     private fun updateTemperature() {
-        val units = temperatureUnits()
-        val unitsString = temperatureUnitsString(units)
-
-        maxTemp.text = getString(R.string.max_temp_format, forecast?.getMaxTemp(units), unitsString)
-        minTemp.text = getString(R.string.min_temp_format, forecast?.getMinTemp(units), unitsString)
+        // Actualizamos la temperatura de nuestros ViewHolder/CardViews. Para ello se lo indicamos al RecyclerView
+        forecastList.adapter.notifyDataSetChanged()
     }
 
     private fun temperatureUnitsString(units: Forecast.TempUnit) =

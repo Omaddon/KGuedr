@@ -5,7 +5,7 @@ import java.io.Serializable
 
 data class City(
         var name: String,
-        var forecast: Forecast?) : Serializable {
+        var forecast: List<Forecast>?) : Serializable {
 
     constructor(name: String) : this(name, null)
 
