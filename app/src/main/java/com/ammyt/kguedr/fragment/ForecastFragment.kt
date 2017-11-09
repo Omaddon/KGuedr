@@ -1,6 +1,7 @@
 package com.ammyt.kguedr.fragment
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Fragment
 import android.content.Intent
 import android.os.Bundle
@@ -216,7 +217,25 @@ class ForecastFragment : Fragment() {
                 downloadForecast(city)
             }
 
-            forecast = newForecast.await()
+            val downloadedForecast = newForecast.await()
+
+            if (downloadedForecast != null) {
+                // Descarga correcta
+                forecast = downloadedForecast
+            }
+            else {
+                // Error en la descarga
+                AlertDialog.Builder(activity)
+                        .setTitle("Error")
+                        .setMessage("Error downloading forecast information.")
+                        .setPositiveButton("Retry", { dialog, _ ->
+                            dialog.dismiss()
+                            updateForecast()
+                        })
+                        // Deberíamos informar a la actividad en lugar de hacer esto
+                        .setNegativeButton("Exit", { dialog, _ -> activity.finish() })
+                        .show()
+            }
         }
 
 // ------------------------------------------------------------------------------------------
