@@ -10,12 +10,15 @@ import com.ammyt.kguedr.R
 import com.ammyt.kguedr.model.Forecast
 
 
-class ForecastRecyclerViewAdapter(
-        val forecast: List<Forecast>?,
-        val tempUnit: Forecast.TempUnit) : RecyclerView.Adapter<ForecastRecyclerViewAdapter.ForecastViewHolder>() {
+class ForecastRecyclerViewAdapter(val forecast: List<Forecast>?, val tempUnit: Forecast.TempUnit)
+    : RecyclerView.Adapter<ForecastRecyclerViewAdapter.ForecastViewHolder>() {
+
+    var onClickListener: View.OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ForecastViewHolder {
         val view = LayoutInflater.from(parent?.context).inflate(R.layout.content_forecast, parent, false)
+        view.setOnClickListener(onClickListener)
+
         return ForecastViewHolder(view)
     }
 

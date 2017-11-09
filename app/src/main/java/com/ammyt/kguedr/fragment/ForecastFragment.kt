@@ -9,13 +9,14 @@ import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
+import android.widget.TextView
 import android.widget.ViewSwitcher
 import com.ammyt.kguedr.CONSTANT_APIKEY
 import com.ammyt.kguedr.PREFERENCES_SHOW_CELSIUS
 import com.ammyt.kguedr.R
+import com.ammyt.kguedr.activity.DetailActivity
 import com.ammyt.kguedr.activity.SettingsActivity
 import com.ammyt.kguedr.adapter.ForecastRecyclerViewAdapter
 import com.ammyt.kguedr.model.City
@@ -74,7 +75,19 @@ class ForecastFragment : Fragment() {
             // Model -> View
             if (value != null) {
                 // Ya tenemos datos. Asignamos el adapter (creado por nosotros) al RecyclerView
-                forecastList.adapter = ForecastRecyclerViewAdapter(value, temperatureUnits())
+                val adapter = ForecastRecyclerViewAdapter(value, temperatureUnits())
+                forecastList.adapter = adapter
+
+                // Le decimos al RecyclerView que nos informe cuando pulsen en una de sus vistas
+                adapter.onClickListener = View.OnClickListener { v: View? ->
+                    // Nos han pulsado en una de las vistas
+                    val position = forecastList.getChildAdapterPosition(v)
+                    val forecastToShow = value[position]
+                    val day = v?.findViewById<TextView>(R.id.day)?.text.toString()
+
+                    // Lanzamos la actividad detalle (no se debería lanzar desde el fragment)
+                    startActivity(DetailActivity.intent(activity, city?.name, day, forecastToShow))
+                }
 
                 // Ya tenemos forecast descargado, así que lo mostramos
                 viewSwitcher.displayedChild = VIEW_INDEX.FORECAST.index

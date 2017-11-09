@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="max_temp_format">Max: %.2f%s</string>
+    <string name="min_temp_format">Min: %.2f%s</string>
+    <string name="humidity_format">Hum: %.0f%%</string>
+</resources>
