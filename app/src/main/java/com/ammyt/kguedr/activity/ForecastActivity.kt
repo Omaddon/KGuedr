@@ -52,10 +52,20 @@ class ForecastActivity : AppCompatActivity(), CityListFragment.OnCitySelectedLis
                         .commit()
             }
         }
-
     }
 
     override fun onCitySelected(city: City?, position: Int) {
-        startActivity(CityPagerActivity.intent(this, position))
+        val cityPagerFragment = fragmentManager.findFragmentById(R.id.fragment_city_pager) as? CityPagerFragment
+
+        if (cityPagerFragment == null) {
+            // No tenemos un viewPager
+            startActivity(CityPagerActivity.intent(this, position))
+        }
+        else {
+            // Tenemos un viewPager, así que movemos el pager
+            // Comunicación Actividad -> Fragment
+            cityPagerFragment.moveToCity(position)
+
+        }
     }
 }

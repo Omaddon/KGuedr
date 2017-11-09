@@ -115,6 +115,10 @@ class CityPagerFragment : Fragment() {
         menuNext?.setEnabled(pager.currentItem < Cities.count - 1)
     }
 
+    fun moveToCity(position: Int) {
+        pager.currentItem = position
+    }
+
     private fun updateCityInfo(position: Int) {
         if (activity is AppCompatActivity) {
             // Como hemos puesto nuestra toolbar como "SupportActionBar", podemos acceder a ella así:
