@@ -1,17 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/margin_big"
-    tools:context="com.ammyt.kguedr.activity.ForecastActivity">
+    android:layout_height="match_parent">
 
     <FrameLayout
-        android:id="@+id/city_list_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/margin_big"
+        tools:context="com.ammyt.kguedr.activity.ForecastActivity">
+
+        <FrameLayout
+            android:id="@+id/city_list_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </FrameLayout>
 
     </FrameLayout>
 
-</FrameLayout>
+    <!-- Necesitamos un CoordinatorLayout para que el FloatingActionButton tenga un gravity  -->
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_city_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/margin_big"
+        android:src="@drawable/ic_plus"/>
+
+</android.support.design.widget.CoordinatorLayout>

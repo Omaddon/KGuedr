@@ -2,8 +2,12 @@ package com.ammyt.kguedr.activity
 
 import android.os.Build
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.widget.Button
+import android.widget.Toast
 import com.ammyt.kguedr.R
 import com.ammyt.kguedr.fragment.CityListFragment
 import com.ammyt.kguedr.fragment.CityPagerFragment
@@ -51,6 +55,14 @@ class ForecastActivity : AppCompatActivity(), CityListFragment.OnCitySelectedLis
                         .add(R.id.fragment_city_pager, fragment)
                         .commit()
             }
+        }
+
+        findViewById<FloatingActionButton>(R.id.add_city_button)?.setOnClickListener { v: View ->
+            Snackbar.make(
+                    v,
+                    "We will add a new city... in the future",
+                    Snackbar.LENGTH_LONG)
+                    .show()
         }
     }
 
