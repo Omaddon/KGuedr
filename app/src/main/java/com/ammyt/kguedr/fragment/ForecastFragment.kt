@@ -8,11 +8,10 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.ViewSwitcher
 import com.ammyt.kguedr.CONSTANT_APIKEY
 import com.ammyt.kguedr.PREFERENCES_SHOW_CELSIUS
@@ -112,7 +111,8 @@ class ForecastFragment : Fragment() {
             forecastList = root.findViewById(R.id.forecast_list)
 
             // 2) Le indicamos cómo debe visualiazarse (LayoutManager)
-            forecastList.layoutManager = LinearLayoutManager(activity)
+            forecastList.layoutManager = GridLayoutManager(activity, resources.getInteger(R.integer.recycler_colums))
+//            forecastList.layoutManager = LinearLayoutManager(activity)
 
             // 3) Le indicamos cómo debe animarse (ItemAnimator)
             forecastList.itemAnimator = DefaultItemAnimator()
@@ -320,7 +320,7 @@ class ForecastFragment : Fragment() {
                 var jsonIconString = today.getJSONArray("weather").getJSONObject(0).getString("icon")
 
                 // Convertimos el iconString a un Drawble
-                jsonIconString = jsonIconString.substring(0, jsonIconString.length - 1)
+                jsonIconString = jsonIconString.substring(0, 2)
                 val iconInt = jsonIconString.toInt()
                 val iconResource = when (iconInt) {
                     2 -> R.drawable.ico_02
@@ -357,11 +357,10 @@ class ForecastFragment : Fragment() {
 
     private fun updateTemperature() {
         // Actualizamos la temperatura de nuestros ViewHolder/CardViews. Para ello se lo indicamos al RecyclerView
-        forecastList.adapter.notifyDataSetChanged()
-    }
+        forecastList.adapter = ForecastRecyclerViewAdapter(forecast, temperatureUnits())
 
-    private fun temperatureUnitsString(units: Forecast.TempUnit) =
-            if (units == Forecast.TempUnit.CELSIUS) "ºC" else "ºF"
+//        forecastList.adapter.notifyDataSetChanged()
+    }
 
     private fun temperatureUnits() =
             if (PreferenceManager.getDefaultSharedPreferences(activity)

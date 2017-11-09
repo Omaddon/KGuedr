@@ -11,7 +11,7 @@ import com.ammyt.kguedr.model.Forecast
 
 
 class ForecastRecyclerViewAdapter(
-        val forecast: List<Forecast>,
+        val forecast: List<Forecast>?,
         val tempUnit: Forecast.TempUnit) : RecyclerView.Adapter<ForecastRecyclerViewAdapter.ForecastViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ForecastViewHolder {
@@ -20,11 +20,13 @@ class ForecastRecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(holder: ForecastViewHolder?, position: Int) {
-        holder?.bindForecast(forecast[position], tempUnit, position)
+        if (forecast != null) {
+            holder?.bindForecast(forecast[position], tempUnit, position)
+        }
     }
 
     override fun getItemCount(): Int {
-        return forecast.size
+        return forecast?.size ?: 0
     }
 
     // Creamos una clase interna, la cuál será el "hueco" donde colocaremos nuestras celdas
