@@ -85,6 +85,9 @@ class ForecastFragment : Fragment() {
 
                 // Ya tenemos forecast descargado, así que lo mostramos
                 viewSwitcher.displayedChild = VIEW_INDEX.FORECAST.index
+
+                // Debemos cachear los datos para que no se los descargue cada vez
+                city?.forecast = value
             }
             else {
                 updateForecast()
